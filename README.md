@@ -10,7 +10,7 @@ Claude Code için piksel sanatı bir sultan papağanı modu.
 ## Kurulum
 
 ```
-/plugin install murtaza --marketplace <kullanıcı>/murtaza
+/plugin install murtaza --marketplace sokachuu/Murtaza
 ```
 
 ## Geliştirme
