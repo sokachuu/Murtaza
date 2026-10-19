@@ -1,0 +1,7 @@
+{
+  "name": "murtaza",
+  "version": "1.1.0",
+  "description": "Murtaza: piksel sanatı bir sultan papağanı. Yanıt baloncuğunun üstüne konar, istem kutusunun üstünde zıplayarak gezer, sohbete göre dans eder, şarkı söyler, uyur.",
+  "author": { "name": "Bilge Kaan" },
+  "types": "./types/index.d.ts"
+}

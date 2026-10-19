@@ -1,0 +1,6 @@
+{
+  "name": "murtaza",
+  "owner": { "name": "Bilge Kaan" },
+  "description": "Murtaza: Claude Code için piksel sanatı sultan papağanı",
+  "plugins": [{ "name": "murtaza", "source": "./", "description": "Piksel sanatı sultan papağanı: panelde gezer, sohbete göre sevinir, üzülür, dans eder." }]
+}
