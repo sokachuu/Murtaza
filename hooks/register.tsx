@@ -31,7 +31,7 @@ export function reactTo(text: string, from: 'user' | 'claude'): Reaction | undef
   if (from === 'user') {
     if (/te(ş|s)ekk(ü|u)r|sa(ğ|g) ?ol|eyvallah|thanks|thank you|mersi/.test(t)) return { mood: 'love', lines: THANKS_LINES, forMs: 4000 }
     if (/seni seviyorum|aferin|bravo|harika|süper|muhteşem|love you/.test(t)) return { mood: 'love', lines: LOVE_LINES, forMs: 4000 }
-    if (/dans|şarkı|sarki|müzik|muzik|parti|oyna/.test(t)) return { mood: 'dance', lines: DANCE_LINES, forMs: 6000 }
+    if (/dans|şarkı|sarki|müzik|muzik|parti|oyna/.test(t)) return { mood: 'dance', lines: DANCE_LINES, forMs: 10000 }
     if (/darı|dari|mama|acıktın|aciktin|yemek/.test(t)) return { mood: 'eating', lines: EAT_LINES, forMs: 3500 }
     if (/iyi geceler|uyku|uyu\b|good night/.test(t)) return { mood: 'sleep', lines: NIGHT_LINES }
     if (/olmadı|olmadi|bozuldu|çalışmıyor|calismiyor|hata|patladı|patladi/.test(t)) return { mood: 'sad', lines: SAD_LINES, forMs: 3000 }
@@ -43,6 +43,8 @@ export function reactTo(text: string, from: 'user' | 'claude'): Reaction | undef
 }
 
 let lastActivity = 0
+/** Kullanıcının tetiklediği tepki bu zamana kadar sürer; tur sonu sevinci onu kesmez. */
+let reactionUntil = 0
 let moodTimer: Timer | undefined
 let sayTimer: Timer | undefined
 
@@ -237,7 +239,12 @@ export const register: Register = on => {
 
   on('prompt.submit', async ($, e, next) => {
     try {
-      if (!(await react($, reactTo(e.text, 'user')))) await setMood($, 'thinking')
+      const r = reactTo(e.text, 'user')
+      if (await react($, r)) {
+        reactionUntil = (await $.clock.now()) + (r?.forMs ?? 0)
+      } else {
+        await setMood($, 'thinking')
+      }
     } catch {
       // Murtaza susarsa sohbet yine sürer
     }
@@ -260,6 +267,8 @@ export const register: Register = on => {
     try {
       if (e.reason === 'error' || e.reason === 'aborted') {
         await react($, { mood: 'sad', lines: SAD_LINES, forMs: 4000 })
+      } else if ((await $.clock.now()) < reactionUntil) {
+        // Kullanıcının istediği dans / sevgi sürsün
       } else if (!(await react($, reactTo(r.text, 'claude')))) {
         await react($, { mood: 'happy', lines: DONE_LINES, forMs: 4000 })
       }
